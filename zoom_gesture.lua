@@ -33,7 +33,7 @@ ZoomGesture.__index = ZoomGesture ---@private
 ZoomGesture.__parent = BaseGesture ---@private
 
 ---@package
----@param clip boolean
+---@param clip boolean?
 ---@param constraint Kazari.AnyConstraint?
 function ZoomGesture:init(clip, constraint)
 	self.constraint = constraint ---@private
@@ -155,7 +155,7 @@ function ZoomGesture:_updateGesture(finish)
 end
 
 function ZoomGesture:__tostring()
-	return string.format("ZoomGesture<%p>(%s, %s)", self, self.clipTouch, self.constraint)
+	return string.format("ZoomGesture<%p>(%s, %p)", self, self.clipTouch, self.constraint)
 end
 
 setmetatable(ZoomGesture, {

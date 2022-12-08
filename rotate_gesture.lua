@@ -29,8 +29,8 @@ local util = require(path..".util")
 ---Implements rotate gesture
 ---@class Kazari.RotateGesture
 local RotateGesture = {}
-RotateGesture.__index = RotateGesture
-RotateGesture.__parent = BaseGesture
+RotateGesture.__index = RotateGesture ---@private
+RotateGesture.__parent = BaseGesture ---@private
 
 ---@package
 ---@param constraint Kazari.AnyConstraint?
@@ -42,16 +42,16 @@ end
 ---@param context T
 ---@param func fun(context:T,angle:number,da:number)
 function RotateGesture:onRotate(context, func)
-	self.onRotateContext = context
-	self.onRotateCallback = func
+	self.onRotateContext = context ---@private
+	self.onRotateCallback = func ---@private
 end
 
 ---@generic U
 ---@param context U
 ---@param func fun(context:U,angle:number,da:number)
 function RotateGesture:onRotateComplete(context, func)
-	self.onRotateDoneContext = context
-	self.onRotateDoneCallback = func
+	self.onRotateDoneContext = context ---@private
+	self.onRotateDoneCallback = func ---@private
 end
 
 ---@param x number
@@ -128,8 +128,8 @@ function RotateGesture:_updateGesture(mode)
 	local a = math.atan2(self.t2[3] - self.t1[3], self.t2[2] - self.t1[2])
 
 	if mode == 0 then
-		self.initAngle = a
-		self.angle = 0
+		self.initAngle = a ---@private
+		self.angle = 0 ---@private
 	end
 
 	local da = a - self.initAngle
@@ -139,8 +139,8 @@ function RotateGesture:_updateGesture(mode)
 		da = 2 * math.pi + da
 	end
 
-	self.initAngle = a
-	self.angle = self.angle + da
+	self.initAngle = a ---@private
+	self.angle = self.angle + da ---@private
 
 	if self.onRotateCallback then
 		self.onRotateCallback(self.onRotateContext, self.angle, da)
@@ -151,13 +151,13 @@ function RotateGesture:_updateGesture(mode)
 			self.onRotateDoneCallback(self.onRotateDoneContext, self.angle, da)
 		end
 
-		self.initAngle = nil
-		self.angle = nil
+		self.initAngle = nil ---@private
+		self.angle = nil ---@private
 	end
 end
 
 function RotateGesture:__tostring()
-	return string.format("RotateGesture<%p>(%s)", self, self.constraint)
+	return string.format("RotateGesture<%p>(%p)", self, self.constraint)
 end
 
 setmetatable(RotateGesture, {
