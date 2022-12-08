@@ -55,4 +55,12 @@ function util.distance(x1, y1, x2, y2)
 	return math.sqrt((x2 - x1) ^ 2 + (y2-  y1) ^ 2)
 end
 
+---@param px number
+---@param py number
+---@param constraint Kazari.AnyConstraint?
+function util.ensurePointInside(px, py, constraint)
+	local x, y, w, h = util.resolveConstraint(constraint)
+	return math.min(math.max(px, x), x + w), math.min(math.max(py, y), y + h)
+end
+
 return util

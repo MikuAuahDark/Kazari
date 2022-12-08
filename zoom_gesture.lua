@@ -61,8 +61,16 @@ end
 ---@param pressure number
 function ZoomGesture:touchpressed(id, x, y, pressure)
 	if not self.t1 then
+		if self.clipTouch then
+			x, y = util.ensurePointInside(x, y, self.constraint)
+		end
+
 		self.t1 = {id, x, y} ---@private
 	elseif not self.t2 then
+		if self.clipTouch then
+			x, y = util.ensurePointInside(x, y, self.constraint)
+		end
+
 		self.t2 = {id, x, y} ---@private
 
 		-- Start gesture
@@ -75,34 +83,66 @@ function ZoomGesture:touchpressed(id, x, y, pressure)
 	return true
 end
 
+---@param x number
+---@param y number
+---@param dx number
+---@param dy number
+---@param pressure number
 function ZoomGesture:touchmoved(id, x, y, dx, dy, pressure)
 	-- Update gesture
 	if id == self.t1[1] then
+		if self.clipTouch then
+			x, y = util.ensurePointInside(x, y, self.constraint)
+		end
+
 		self.t1[2], self.t1[3] = x, y
-		self:_updateGesture(false)
+
+		if self.t2 then
+			self:_updateGesture(false)
+		end
 	elseif id == self.t2[1] then
+		if self.clipTouch then
+			x, y = util.ensurePointInside(x, y, self.constraint)
+		end
+
 		self.t2[2], self.t2[3] = x, y
 		self:_updateGesture(false)
 	else
 		return false
 	end
+
+	return true
 end
 
 ---@param x number
 ---@param y number
 function ZoomGesture:touchreleased(id, x, y)
 	if id == self.t1[1] then
+		if self.clipTouch then
+			x, y = util.ensurePointInside(x, y, self.constraint)
+		end
+
 		self.t1[2], self.t1[3] = x, y
-		self:_updateGesture(true)
+
+		if self.t2 then
+			self:_updateGesture(true)
+		end
+
 		self.t1 = self.t2 ---@private
 		self.t2 = nil ---@private
 	elseif id == self.t2[1] then
+		if self.clipTouch then
+			x, y = util.ensurePointInside(x, y, self.constraint)
+		end
+
 		self.t2[2], self.t2[3] = x, y
 		self:_updateGesture(true)
 		self.t2 = nil ---@private
 	else
 		return false
 	end
+
+	return true
 end
 
 ---@private
