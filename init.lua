@@ -53,5 +53,7 @@ end
 
 ---@type Kazari.ZoomGesture|fun(clip:boolean,constraint:Kazari.AnyConstraint?):Kazari.ZoomGesture
 kazari.ZoomGesture = require(path..".zoom_gesture")
+---@type Kazari.RotateGesture|fun(constraint:Kazari.AnyConstraint?):Kazari.RotateGesture
+kazari.RotateGesture = require(path..".rotate_gesture")
 
 return kazari
