@@ -31,9 +31,7 @@ if path:sub(-5) == ".init" then
 	path = path:sub(1, -6)
 end
 
----@alias Kazari.NumberedConstraint {[1]:number,[2]:number,[3]:number,[4]:number}
----@alias Kazari.NamedConstraint {x:number,y:number,w:number,h:number}
----@alias Kazari.AnyConstraint Kazari.NumberedConstraint|Kazari.NamedConstraint|NLay.BaseConstraint
+---@alias Kazari.AnyConstraint {[1]:number,[2]:number,[3]:number,[4]:number}|{x:number,y:number,w:number,h:number}|NLay.BaseConstraint
 
 ---@param obj any
 ---@param class Kazari.BaseGesture
@@ -55,5 +53,7 @@ end
 kazari.ZoomGesture = require(path..".zoom_gesture")
 ---@type Kazari.RotateGesture|fun(constraint:Kazari.AnyConstraint?):Kazari.RotateGesture
 kazari.RotateGesture = require(path..".rotate_gesture")
+---@type Kazari.PanGesture|fun(nfingers:integer,clip:boolean?,constraint:Kazari.AnyConstraint?):Kazari.PanGesture
+kazari.PanGesture = require(path..".pan_gesture")
 
 return kazari

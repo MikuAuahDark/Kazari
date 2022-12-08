@@ -28,10 +28,8 @@ function util.resolveConstraint(constraint)
 			---@cast constraint NLay.BaseConstraint
 			return constraint:get()
 		elseif #constraint == 4 then
-			---@cast constraint Kazari.NumberedConstraint
 			return constraint[1], constraint[2], constraint[3], constraint[4]
 		else
-			---@cast constraint Kazari.NamedConstraint
 			return constraint.x, constraint.y, constraint.w, constraint.h
 		end
 	else
