@@ -160,7 +160,10 @@ function TapGesture:_update(mode)
 		end
 	end
 
-	if util.distance(avgX, avgY, self.lastX, self.lastY) >= self.moveThreshold then
+	if
+		(self.moveThreshold == -1 and (not util.pointInConstraint(avgX, avgY, self.constraint))) or
+		(self.moveThreshold > 0 and util.distance(avgX, avgY, self.lastX, self.lastY) >= self.moveThreshold)
+	then
 		-- Cancel
 		self.cancelled = true
 
