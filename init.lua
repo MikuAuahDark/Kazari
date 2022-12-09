@@ -55,5 +55,7 @@ kazari.ZoomGesture = require(path..".zoom_gesture")
 kazari.RotateGesture = require(path..".rotate_gesture")
 ---@type Kazari.PanGesture|fun(nfingers:integer,clip:boolean?,constraint:Kazari.AnyConstraint?):Kazari.PanGesture
 kazari.PanGesture = require(path..".pan_gesture")
+---@type Kazari.TapGesture|fun(nfingers:integer,moveThreshold:number?,altDuration:number?,constraint:Kazari.AnyConstraint?):Kazari.TapGesture
+kazari.TapGesture = require(path..".tap_gesture")
 
 return kazari
