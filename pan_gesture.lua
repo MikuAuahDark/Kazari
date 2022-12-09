@@ -128,12 +128,12 @@ function PanGesture:_update(finalize)
 
 	local dx, dy = 0, 0
 
-	if self.lastX then
+	if self.lastX and self.lastY then
 		dx, dy = avgX - self.lastX, avgY - self.lastY
-	else
-		self.lastX = avgX ---@private
-		self.lastY = avgY ---@private
 	end
+
+	self.lastX = avgX ---@private
+	self.lastY = avgY ---@private
 
 	if self.onMoveCallback then
 		self.onMoveCallback(self.onMoveContext, avgX, avgY, dx, dy, avgP)
