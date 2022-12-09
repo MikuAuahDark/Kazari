@@ -23,6 +23,10 @@ local kazari = require("libs.kazari")
 Documentation
 -----
 
+***********
+
+These functions are available in Kazari 1.0.0.
+
 ### `Constraint`
 
 This is pseudo-type that can be used to limit where the touch gesture operates on.
@@ -118,4 +122,88 @@ means counter-clockwise rotation.
 ### `void RotateGesture:onRotateComplete(any context, function func)`
 
 Same as above but called when rotate gesture is completed (user lifting their finger) and passes
-the final value.
+the final value (with the `da` parameter being `nil`).
+
+### `kazari.PanGesture(number nfingers, boolean clip = false, Constraint constraint = nil)`
+
+The `PanGesture` class. This gesture class is responsible of reporting average x and y position across
+`nfingers` fingers (1 included) when user moves their finger(s). Calling this function creates `PanGesture`
+instance which is derived from `BaseGesture`.
+
+Notes:
+
+* `nfingers` must be at least 1.
+* `clip` clips the position of each finger instead of the average.
+
+### `void PanGesture:onMove(any context, function func)`
+
+Register function `func` to be called everytime the average position is updated, additionally passing
+`context` as the 1st parameter.
+
+The function signature for `func` must follow this convention:
+
+```
+void func(any context, number x, number y, number dx, number dy, number pressure)
+```
+
+Where `x`, `y`, and `pressure` are average x, y, and pressure of each user finger. Note that on
+pressure-insensitive touchscreens, `pressure` will be always 1. `dx` and `dy` are position differences from
+previous call of this function.
+
+### `kazari.TapGesture(number nfingers, number moveThreshold = 32, number altDuration = 0, Constraint constraint = nil)`
+
+The `TapGesture` class. This gesture class is responsible of sending "tap" event with at least `nfingers`
+finger(s) (1 included), additionally with option to have "alternative" tap (usually mapped to "right click") when
+user holds their finger(s) for at least `altDuration` _time units_. `altDuration` of 0 means the "alternative" tap
+is disabled. `moveThreshold` is the maximum _distance unit_ the user finger can move before the tap is cancelled.
+Calling this function creates `TapGesture` instance which is derived from `BaseGesture`.
+
+The definition of _time unit_ depends entirely on the units of delta time passed in `:update` function. If user
+treat the delta time as milliseconds, then the _time unit_ is in milliseconds.
+
+The definition of _distance unit_ depends entirely on the user. _Distance units_ may be in virtual resolution
+or in pixels, as long as it is a unit that define distance on screen.
+
+### `void TapGesture:onStart(any context, function func)`
+
+Register function `func` to be called when a tap is initiated, additionally passing `context` as the 1st parameter.
+
+"Tap" is initiated when at least `nfingers` finger(s) are in the bound defined by `constraint`, not moving at all.
+
+The function signature for `func` must follow this convention:
+
+```
+void func(any context)
+```
+
+### `void TapGesture:onCancel(any context, function func)`
+
+Register function `func` to be called when a tap is cancelled, additionally passing `context` as the 1st parameter.
+
+"Tap" is cancelled when the average position of the fingers moves more than `moveThreshold` _distance units_.
+
+The function signature for `func` must follow this convention:
+
+```
+void func(any context, number duration)
+```
+
+Where `duration` is how long user fingers was on the screen before it was cancelled, in _time units_.
+
+### `void TapGesture:onTap(any context, function func)`
+
+Register function `func` to be called when a tap is successfully initiated, additionally passing `context` as the
+1st parameter.
+
+"Tap" is considered success when the average position of the finger moves less than `moveThreshold` _distance units_
+and then user release one or more of their finger(s).
+
+The function signature for `func` must follow this convention:
+
+```
+void func(any context, boolean alternate, number duration)
+```
+
+Where `alternate` is `true` if `duration` is longer than or equal to `altDuration` (except where `altDuration` is
+0, `alternate` will always be `false`) and `duration` is how long user fingers was on the screen before the user
+releases one or more of their finger(s) on the screen, in _time units_.
