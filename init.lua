@@ -19,7 +19,7 @@
 -- 3. This notice may not be removed or altered from any source distribution.
 
 local kazari = {
-	_VERSION = "0.0.1",
+	_VERSION = "1.0.0",
 	_AUTHOR = "Miku AuahDark",
 	_LICENSE = "zLib"
 }
@@ -49,6 +49,8 @@ function kazari.is(obj, class)
 	return false
 end
 
+---@type Kazari.BaseGesture
+kazari.BaseGesture = require(path..".base_gesture")
 ---@type Kazari.ZoomGesture|fun(clip:boolean?,constraint:Kazari.AnyConstraint?):Kazari.ZoomGesture
 kazari.ZoomGesture = require(path..".zoom_gesture")
 ---@type Kazari.RotateGesture|fun(constraint:Kazari.AnyConstraint?):Kazari.RotateGesture
