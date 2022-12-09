@@ -48,7 +48,7 @@ end
 
 ---@generic U
 ---@param context U
----@param func fun(context:U,angle:number,da:number)
+---@param func fun(context:U,angle:number)
 function RotateGesture:onRotateComplete(context, func)
 	self.onRotateDoneContext = context ---@private
 	self.onRotateDoneCallback = func ---@private
@@ -148,7 +148,7 @@ function RotateGesture:_updateGesture(mode)
 
 	if mode == 2 then
 		if self.onRotateDoneCallback then
-			self.onRotateDoneCallback(self.onRotateDoneContext, self.angle, da)
+			self.onRotateDoneCallback(self.onRotateDoneContext, self.angle)
 		end
 
 		self.initAngle = nil ---@private
