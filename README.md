@@ -164,6 +164,13 @@ treat the delta time as milliseconds, then the _time unit_ is in milliseconds.
 The definition of _distance unit_ depends entirely on the user. _Distance units_ may be in virtual resolution
 or in pixels, as long as it is a unit that define distance on screen.
 
+### `void TapGesture:update(number dt)`
+
+Update the tap gesture for alternate tap. In LÖVE environment, this function should be called in
+[`love.update`](https://love2d.org/wiki/love.update) with their arguments passed accordingly.
+
+Note that it's okay not to call this function if `altDuration` is set to 0 (where alternate tap events is disabled).
+
 ### `void TapGesture:onStart(any context, function func)`
 
 Register function `func` to be called when a tap is initiated, additionally passing `context` as the 1st parameter.
