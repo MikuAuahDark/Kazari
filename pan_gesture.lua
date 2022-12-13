@@ -32,15 +32,18 @@ local PanGesture = {}
 PanGesture.__index = PanGesture ---@private
 PanGesture.__parent = BaseGesture ---@private
 
----@param nfingers integer
+---@param minfingers integer
+---@param maxfingers integer?
 ---@param clip boolean?
 ---@param constraint Kazari.AnyConstraint?
-function PanGesture:init(nfingers, clip, constraint)
-	assert(nfingers > 0, "number of touches must be greater than 0")
+function PanGesture:init(minfingers, maxfingers, clip, constraint)
+	maxfingers = maxfingers or minfingers
+	assert(minfingers and minfingers > 0 and maxfingers > 0, "number of touches must be greater than 0")
 
 	---@type {[1]:any,[2]:number,[3]:number,[4]:number}[]
 	self.touches = {} ---@private
-	self.minCount = nfingers ---@private
+	self.minCount = minfingers ---@private
+	self.maxCount = maxfingers ---@private
 	self.clipTouch = not not clip ---@private
 	self.constraint = constraint ---@private
 end
@@ -53,16 +56,28 @@ function PanGesture:onMove(context, func)
 	self.onMoveContext = context ---@private
 end
 
+---@generic T
+---@param context T
+---@param func fun(context:T,x:number,y:number,pressure:number)
+function PanGesture:onMoveComplete(context, func)
+	self.onMoveCompleteCallback = func
+	self.onMoveCompleteContext = context
+end
+
+function PanGesture:getTouchCount()
+	return #self.touches
+end
+
 ---@param x number
 ---@param y number
 ---@param pressure number
 function PanGesture:touchpressed(id, x, y, pressure)
-	if #self.touches >= self.minCount or not util.pointInConstraint(x, y, self.constraint) then
+	if #self.touches >= self.maxCount or not util.pointInConstraint(x, y, self.constraint) then
 		return false
 	end
 
 	self.touches[#self.touches + 1] = {id, x, y, pressure}
-	self:_update(false)
+	self:_update(false, 0, 0)
 	return true
 end
 
@@ -80,7 +95,7 @@ function PanGesture:touchmoved(id, x, y, dx, dy, pressure)
 			end
 
 			v[2], v[3], v[4] = x, y, pressure
-			self:_update(false)
+			self:_update(false, dx, dy)
 			return true
 		end
 	end
@@ -98,7 +113,7 @@ function PanGesture:touchreleased(id, x, y)
 			end
 
 			v[2], v[3] = x, y
-			self:_update(true)
+			self:_update(#self.touches <= self.minCount, 0, 0)
 			table.remove(self.touches, i)
 			return true
 		end
@@ -109,44 +124,48 @@ end
 
 ---@private
 ---@param finalize boolean
-function PanGesture:_update(finalize)
+---@param dx number
+---@param dy number
+function PanGesture:_update(finalize, dx, dy)
 	if #self.touches < self.minCount then
 		return
 	end
 
-	-- Average
-	local avgX, avgY, avgP = 0, 0, 0
+	-- Sum pressure
+	local avgP = 0
 	for _, v in ipairs(self.touches) do
-		avgX = avgX + v[2]
-		avgY = avgY + v[3]
 		avgP = avgP + v[4]
 	end
 
-	avgX = avgX / #self.touches
-	avgY = avgY / #self.touches
+	-- Average
 	avgP = avgP / #self.touches
+	dx = dx / #self.touches
+	dy = dy / #self.touches
 
-	local dx, dy = 0, 0
-
-	if self.lastX and self.lastY then
-		dx, dy = avgX - self.lastX, avgY - self.lastY
+	if (not self.lastX) or (not self.lastY) then
+		self.lastX = 0 ---@private
+		self.lastY = 0 ---@private
 	end
 
-	self.lastX = avgX ---@private
-	self.lastY = avgY ---@private
+	self.lastX = self.lastX + dx ---@private
+	self.lastY = self.lastY + dy ---@private
 
 	if self.onMoveCallback then
-		self.onMoveCallback(self.onMoveContext, avgX, avgY, dx, dy, avgP)
+		self.onMoveCallback(self.onMoveContext, self.lastX, self.lastY, dx, dy, avgP)
 	end
 
 	if finalize then
+		if self.onMoveCompleteCallback then
+			self.onMoveCompleteCallback(self.onMoveContext, self.lastX, self.lastY, avgP)
+		end
+
 		self.lastX = nil ---@private
 		self.lastY = nil ---@private
 	end
 end
 
 function PanGesture:__tostring()
-	return string.format("PanGesture<%p>(%d, %s, %p)", self, self.minCount, self.clipTouch, self.constraint)
+	return string.format("PanGesture<%p>(%d, %d, %s, %p)", self, self.minCount, self.maxCount, self.clipTouch, self.constraint)
 end
 
 setmetatable(PanGesture, {
