@@ -190,9 +190,9 @@ function TapGesture:__tostring()
 end
 
 setmetatable(TapGesture, {
-	__call = function(_, nfingers, moveThreshold, altDuration, clip, constraint)
+	__call = function(_, nfingers, moveThreshold, altDuration, constraint)
 		local object = setmetatable({}, TapGesture)
-		object:init(nfingers, moveThreshold, altDuration, clip, constraint)
+		object:init(nfingers, moveThreshold, altDuration, constraint)
 		return object
 	end
 })

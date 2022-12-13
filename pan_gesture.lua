@@ -169,9 +169,9 @@ function PanGesture:__tostring()
 end
 
 setmetatable(PanGesture, {
-	__call = function(_, nfingers, clip, constraint)
+	__call = function(_, minfingers, maxfingers, clip, constraint)
 		local object = setmetatable({}, PanGesture)
-		object:init(nfingers, clip, constraint)
+		object:init(minfingers, maxfingers, clip, constraint)
 		return object
 	end
 })
