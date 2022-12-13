@@ -42,7 +42,7 @@ end
 
 ---@generic T
 ---@param context T
----@param func fun(context:T, scale: number)
+---@param func fun(context:T, scale: number, midX: number, midY: number)
 function ZoomGesture:onZoom(context, func)
 	self.onZoomContext = context ---@private
 	self.onZoomCallback = func ---@private
@@ -147,10 +147,13 @@ function ZoomGesture:_updateGesture(finish)
 	local d = util.distance(self.t1[2], self.t1[3], self.t2[2], self.t2[3])
 	local scale = d / self.initDistance
 
+	local cx = (self.t1[2] + self.t2[2]) / 2
+	local cy = (self.t1[3] + self.t2[3]) / 2
+
 	if finish and self.onZoomDoneCallback then
 		self.onZoomDoneCallback(self.onZoomDoneContext, scale)
 	elseif self.onZoomCallback then
-		self.onZoomCallback(self.onZoomContext, scale)
+		self.onZoomCallback(self.onZoomContext, scale, cx, cy)
 	end
 end
 
