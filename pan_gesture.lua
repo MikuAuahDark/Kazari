@@ -38,7 +38,7 @@ PanGesture.__parent = BaseGesture ---@private
 ---@param constraint Kazari.AnyConstraint?
 function PanGesture:init(minfingers, maxfingers, clip, constraint)
 	maxfingers = maxfingers or minfingers
-	assert(minfingers and minfingers > 0 and maxfingers > 0, "number of touches must be greater than 0")
+	assert(minfingers and minfingers > 0 and maxfingers >= minfingers, "number of touches must be greater than 0")
 
 	---@type {[1]:any,[2]:number,[3]:number,[4]:number}[]
 	self.touches = {} ---@private
