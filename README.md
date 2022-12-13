@@ -88,15 +88,23 @@ Register function `func` to be called everytime the zoom ratio is updated, addit
 The function signature for `func` must follow this convention:
 
 ```
-void func(any context, number scale)
+void func(any context, number scale, number midX, number midY)
 ```
 
-Where `scale` always starts at 1 first then increase or decrease based on the finger movement.
+Where `scale` always starts at 1 first then increase or decrease based on the finger movement. `midX` and `midY`
+are middle point of the touch position.
 
 ### `void ZoomGesture:onZoomComplete(any context, function func)`
 
-Same as above but called when pinch zoom gesture is completed (user lifting their finger) and passes
-the final value.
+Same as above but called when pinch zoom gesture is completed (user lifting their finger).
+
+The function signature for `func` must follow this convention:
+
+```
+void func(any context, number scale)
+```
+
+Where `scale` is the final scale ratio relative to the first time this gesture is performed.
 
 ### `kazari.RotateGesture(Constraint constraint = nil)`
 
@@ -124,15 +132,16 @@ means counter-clockwise rotation.
 Same as above but called when rotate gesture is completed (user lifting their finger) and passes
 the final value (with the `da` parameter being `nil`).
 
-### `kazari.PanGesture(number nfingers, boolean clip = false, Constraint constraint = nil)`
+### `kazari.PanGesture(number minfingers, number maxfingers = minfingers boolean clip = false, Constraint constraint = nil)`
 
-The `PanGesture` class. This gesture class is responsible of reporting average x and y position across
-`nfingers` fingers (1 included) when user moves their finger(s). Calling this function creates `PanGesture`
+The `PanGesture` class. This gesture class is responsible of reporting x and y movement from `minfingers`
+finger(s) (1 included) to `mzxfingers` finger(s) (1 included). Calling this function creates `PanGesture`
 instance which is derived from `BaseGesture`.
 
 Notes:
 
-* `nfingers` must be at least 1.
+* `minfingers` must be at least 1.
+* `maxfingers` must be at least `minfingers` (default).
 * `clip` clips the position of each finger instead of the average.
 
 ### `void PanGesture:onMove(any context, function func)`
@@ -146,9 +155,28 @@ The function signature for `func` must follow this convention:
 void func(any context, number x, number y, number dx, number dy, number pressure)
 ```
 
-Where `x`, `y`, and `pressure` are average x, y, and pressure of each user finger. Note that on
-pressure-insensitive touchscreens, `pressure` will be always 1. `dx` and `dy` are position differences from
-previous call of this function.
+Where `x`, `y` are the relative position of the movement and `pressure` are the average pressure across fingers.
+Note that on pressure-insensitive touchscreens, `pressure` will be always 1. `dx` and `dy` are position differences
+from previous call of this function.
+
+### `void PanGesture:onMoveComplete(any context, function func)`
+
+Register function `func` to be called when user lifting their finger and the amount of fingers registered are less
+than `minfingers`.
+
+The function signature for `func` must follow this convention:
+
+```
+void func(any context, number x, number y, number pressure)
+```
+
+Where `x`, `y` are the final relative position of the movement and `pressure` are the average pressure across fingers.
+Note that on pressure-insensitive touchscreens, `pressure` will be always 1.
+
+### `void PanGesture:getTouchCount()`
+
+Returns amount of fingers currently the user has in their screen (depends on the `:touch*` method calls). Returns
+value from 0 inclusive to `maxfingers` inclusive.
 
 ### `kazari.TapGesture(number nfingers, number moveThreshold = 32, number altDuration = 0, Constraint constraint = nil)`
 
